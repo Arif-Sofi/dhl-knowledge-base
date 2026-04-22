@@ -1,52 +1,81 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 
 export default function ArticleDetail({ params }) {
+  const { id } = use(params);
   const router = useRouter();
   const [article, setArticle] = useState(null);
   const [versions, setVersions] = useState([]);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     fetchArticleDetails();
-  }, []);
+  }, [id]);
 
   const fetchArticleDetails = async () => {
-    // Fetch article
-    const res = await fetch(`/api/articles`);
-    const data = await res.json();
-    const current = data.find(a => a.id === params.id);
-    setArticle(current);
+    try {
+      // Fetch specific article
+      const res = await fetch(`/api/articles/${id}`);
+      if (!res.ok) throw new Error('Article not found');
+      const data = await res.json();
+      setArticle(data);
 
-    // Fetch version history directly from Supabase for speed
-    const { data: history } = await supabase
-      .from('article_versions')
-      .select('*')
-      .eq('article_id', params.id)
-      .order('changed_at', { ascending: false });
-    setVersions(history || []);
+      // Fetch version history directly from Supabase
+      const { data: history, error: historyError } = await supabase
+        .from('article_versions')
+        .select('*')
+        .eq('article_id', id)
+        .order('changed_at', { ascending: false });
+      
+      if (historyError) console.error('History fetch error:', historyError);
+      setVersions(history || []);
+    } catch (err) {
+      setError(err.message);
+    }
   };
 
   const updateStatus = async (newStatus) => {
-    await fetch(`/api/articles/${article.id}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        status: newStatus,
-        old_status: article.status,
-        changed_by: 'supervisor@dhl.com' // Mock user
-      })
-    });
-    fetchArticleDetails(); // Reload data
+    try {
+      const res = await fetch(`/api/articles/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          status: newStatus,
+          old_status: article.status,
+          changed_by: 'supervisor@dhl.com' // Mock user
+        })
+      });
+      if (res.ok) {
+        fetchArticleDetails(); // Reload data
+      }
+    } catch (err) {
+      console.error('Update status error:', err);
+    }
   };
 
   const deleteArticle = async () => {
-    await fetch(`/api/articles/${article.id}`, { method: 'DELETE' });
-    router.push('/');
+    if (!confirm('Are you sure you want to delete this article?')) return;
+    try {
+      const res = await fetch(`/api/articles/${id}`, { method: 'DELETE' });
+      if (res.ok) {
+        router.push('/');
+      }
+    } catch (err) {
+      console.error('Delete article error:', err);
+    }
   };
+
+  if (error) return (
+    <div className="p-8 text-center">
+      <h1 className="text-2xl font-bold text-red-600 mb-4">Error</h1>
+      <p className="text-gray-600 mb-6">{error}</p>
+      <Link href="/" className="text-blue-500 underline">Back to Dashboard</Link>
+    </div>
+  );
 
   if (!article) return <div className="p-8">Loading...</div>;
 
@@ -78,12 +107,12 @@ export default function ArticleDetail({ params }) {
             {/* Workflow Buttons */}
             <div className="flex gap-2">
               {article.status === 'Draft' && (
-                <button onClick={() => updateStatus('Reviewed')} className="bg-blue-500 text-white px-4 py-2 rounded">Mark as Reviewed</button>
+                <button onClick={() => updateStatus('Reviewed')} className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition">Mark as Reviewed</button>
               )}
               {article.status === 'Reviewed' && (
-                <button onClick={() => updateStatus('Published')} className="bg-green-500 text-white px-4 py-2 rounded">Publish to KB</button>
+                <button onClick={() => updateStatus('Published')} className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition">Publish to KB</button>
               )}
-              <button onClick={deleteArticle} className="bg-red-100 text-red-600 px-4 py-2 rounded hover:bg-red-200">Delete</button>
+              <button onClick={deleteArticle} className="bg-red-100 text-red-600 px-4 py-2 rounded hover:bg-red-200 transition">Delete</button>
             </div>
           </div>
         </div>

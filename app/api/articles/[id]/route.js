@@ -1,8 +1,20 @@
 import { supabase } from '@/lib/supabase';
 import { NextResponse } from 'next/server';
 
+export async function GET(req, { params }) {
+  const { id } = await params;
+  const { data, error } = await supabase
+    .from('articles')
+    .select('*')
+    .eq('id', id)
+    .single();
+
+  if (error) return NextResponse.json({ error: error.message }, { status: 404 });
+  return NextResponse.json(data);
+}
+
 export async function PATCH(req, { params }) {
-  const { id } = params;
+  const { id } = await params;
   const { status, old_status, changed_by } = await req.json();
 
   // 1. Update the article status
@@ -28,7 +40,7 @@ export async function PATCH(req, { params }) {
 }
 
 export async function DELETE(req, { params }) {
-  const { id } = params;
+  const { id } = await params;
   const { error } = await supabase.from('articles').delete().eq('id', id);
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
   return NextResponse.json({ success: true });
