@@ -123,7 +123,7 @@ export default function ArticleDetail({ params }) {
           {versions.length === 0 ? <p className="text-gray-500">No status changes yet.</p> : (
             <ul className="space-y-3">
               {versions.map(v => (
-                <li key={v.id} className="text-sm bg-gray-50 p-3 rounded border">
+                <li key={v.id} className="text-sm bg-gray-50 p-3 rounded border text-gray-500">
                   Status changed from <span className="font-bold text-gray-500">{v.old_status}</span> to <span className="font-bold text-gray-800">{v.new_status}</span> 
                   <br/><span className="text-gray-400 text-xs">By {v.changed_by} on {new Date(v.changed_at).toLocaleString()}</span>
                 </li>
