@@ -88,13 +88,13 @@ export default function ArticleDetail({ params }) {
 
         <div className="bg-white p-8 rounded-lg shadow-lg border-t-4 border-red-600 mb-6">
           <div className="flex justify-between items-center mb-6">
-            <h1 className="text-3xl font-bold">{article.title}</h1>
+            <h1 className="text-3xl font-bold text-gray-900">{article.title}</h1>
             <span className="px-4 py-2 rounded-full text-sm font-bold bg-gray-100 border text-gray-700">
               Current Status: {article.status}
             </span>
           </div>
           
-          <div className="bg-gray-50 p-4 rounded border mb-6 whitespace-pre-wrap">
+          <div className="bg-gray-50 p-4 text-blue-400 rounded border mb-6 whitespace-pre-wrap">
             {article.content}
           </div>
           
@@ -119,7 +119,7 @@ export default function ArticleDetail({ params }) {
 
         {/* Version History Table */}
         <div className="bg-white p-6 rounded-lg shadow-lg">
-          <h3 className="text-xl font-bold mb-4">Workflow & Version History</h3>
+          <h3 className="text-xl text-gray-400 font-bold mb-4">Workflow & Version History</h3>
           {versions.length === 0 ? <p className="text-gray-500">No status changes yet.</p> : (
             <ul className="space-y-3">
               {versions.map(v => (

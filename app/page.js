@@ -43,13 +43,13 @@ export default function Dashboard() {
             <input 
               type="text" 
               placeholder="Search by title or tags..." 
-              className="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-red-500"
+              className="w-full pl-10 pr-4 py-2 text-gray-400 border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
           </div>
           <select 
-            className="border rounded-lg px-4 py-2"
+            className="border rounded-lg px-4 py-2 text-gray-700"
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
           >
@@ -74,7 +74,7 @@ export default function Dashboard() {
                     {article.status}
                   </span>
                 </div>
-                <h3 className="text-lg font-bold mb-2">{article.title}</h3>
+                <h3 className="text-lg text-gray-900 font-bold mb-2">{article.title}</h3>
                 <p className="text-sm text-gray-500 mb-4 line-clamp-2">{article.content}</p>
                 <div className="text-xs text-gray-400">Tags: {article.tags || 'None'}</div>
               </div>
