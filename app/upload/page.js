@@ -90,12 +90,12 @@ export default function UploadConsole() {
           <UploadCloud className="mx-auto text-gray-400 mb-2" size={40} />
           <p className="text-sm text-gray-600 mb-4">
             Upload a messy source file to auto-extract text. <br/>
-            <span className="font-bold">Supports: .txt, .pdf, .docx, .msg</span>
+            <span className="font-bold">Supports: .txt, .pdf, .docx, .msg, Images (PNG/JPG)</span>
           </p>
           <input 
             id="file-upload"
             type="file" 
-            accept=".txt,.pdf,.docx,.msg" 
+            accept=".txt,.pdf,.docx,.msg,image/*" 
             onChange={handleFileUpload}
             disabled={isExtracting || isSaving}
             className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-red-50 file:text-red-700 hover:file:bg-red-100 cursor-pointer disabled:opacity-50"

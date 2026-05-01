@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
 import mammoth from 'mammoth';
-// import pdfParse from 'pdf-parse';
+import pdfParse from 'pdf-parse';
 import MsgReader from '@kenjiuno/msgreader';
+import Tesseract from 'tesseract.js';
 
 export async function POST(req) {
   try {
@@ -38,8 +39,13 @@ export async function POST(req) {
       // Try to get the plain text body, fallback to RTF if plain text is missing
       extractedText = msgData.body || "Could not extract text. Email might be image-only.";
       
+    } else if (fileName.match(/\.(png|jpg|jpeg|bmp|webp)$/)) {
+      // Image OCR using Tesseract - Let Tesseract handle workers automatically in Node
+      const { data: { text } } = await Tesseract.recognize(buffer, 'eng');
+      extractedText = text;
+
     } else {
-      return NextResponse.json({ error: 'Unsupported file type. Please upload txt, pdf, docx, or msg.' }, { status: 400 });
+      return NextResponse.json({ error: 'Unsupported file type. Please upload txt, pdf, docx, msg, or an image.' }, { status: 400 });
     }
 
     // 4. Return the extracted text and a suggested title
@@ -51,6 +57,6 @@ export async function POST(req) {
 
   } catch (error) {
     console.error("Extraction error:", error);
-    return NextResponse.json({ error: 'Failed to process file.' }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to process file. ' + error.message }, { status: 500 });
   }
 }
