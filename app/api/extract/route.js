@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
 import mammoth from 'mammoth';
-import pdfParse from 'pdf-parse';
 import MsgReader from '@kenjiuno/msgreader';
 import Tesseract from 'tesseract.js';
+import { PDFParse } from 'pdf-parse';
 
 export async function POST(req) {
   try {
@@ -42,20 +42,26 @@ export async function POST(req) {
     let extractedText = '';
     if (fileName.endsWith('.txt')) {
       extractedText = buffer.toString('utf-8');
-    } else if (fileName.endsWith('.docx')) {
+    } 
+    else if (fileName.endsWith('.docx')) {
       const result = await mammoth.extractRawText({ buffer });
       extractedText = result.value;
-    } else if (fileName.endsWith('.pdf')) {
-      const result = await pdfParse(buffer);
+    } 
+    else if (fileName.endsWith('.pdf')) {
+      const parser = new PDFParse({ data: buffer });
+      const result = await parser.getText();
       extractedText = result.text;
-    } else if (fileName.endsWith('.msg')) {
+    } 
+    else if (fileName.endsWith('.msg')) {
       const msgReader = new MsgReader(buffer);
       const msgData = msgReader.getFileData();
       extractedText = msgData.body || "Could not extract text. Email might be image-only.";
-    } else if (fileName.endsWith('.jpg') || fileName.endsWith('.jpeg') || fileName.endsWith('.png')) {
+    } 
+    else if (fileName.endsWith('.jpg') || fileName.endsWith('.jpeg') || fileName.endsWith('.png')) {
       const result = await Tesseract.recognize(buffer, 'eng');
       extractedText = result.data.text;
-    } else {
+    } 
+    else {
       return NextResponse.json({ error: 'Unsupported file type.' }, { status: 400 });
     }
 
