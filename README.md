@@ -23,24 +23,31 @@ A modern Next.js application designed to manage and automate the creation of kno
    cd dhl-knowledge-base
    ```
 
-2. **Install dependencies:**
+2. **Database Setup (Supabase):**
+   - Go to your [Supabase Dashboard](https://supabase.com/dashboard).
+   - Open the **SQL Editor** from the left sidebar.
+   - Click "New Query".
+   - Copy the contents of the `supabase_setup.sql` file from this repository and paste it into the editor.
+   - Click **Run**. This will create the `articles` table and set up the necessary permissions.
+
+3. **Install dependencies:**
    ```bash
    npm install
    ```
 
-3. **Configure Environment Variables:**
+4. **Configure Environment Variables:**
    Create a `.env.local` file in the root directory and add your Supabase credentials:
    ```env
    NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
    NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
    ```
 
-4. **Run the development server:**
+5. **Run the development server:**
    ```bash
    npm run dev
    ```
 
-5. **Open the app:**
+6. **Open the app:**
    Navigate to [http://localhost:3000](http://localhost:3000) in your browser.
 
 ## File Extraction Support
