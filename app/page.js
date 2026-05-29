@@ -37,29 +37,29 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-gray-50 p-8">
       <div className="max-w-6xl mx-auto">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-red-600">DHL Knowledge Base</h1>
-          <Link href="/upload" id="upload-btn" className="bg-red-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-red-700">
+        <div className="flex justify-between items-center mb-8 bg-dhl-yellow p-4 rounded-lg shadow-sm border-b-4 border-dhl-red">
+          <h1 className="text-3xl font-black text-dhl-red italic tracking-tighter">DHL <span className="text-black font-bold not-italic text-2xl ml-2">Knowledge Base</span></h1>
+          <Link href="/upload" id="upload-btn" className="bg-dhl-red text-white px-6 py-2 rounded-full font-bold flex items-center gap-2 hover:bg-red-700 transition-all shadow-md hover:shadow-lg">
             <Upload size={20} /> Upload / New Draft
           </Link>
         </div>
 
         {/* Filters */}
-        <div className="bg-white p-4 rounded-lg shadow mb-6 flex gap-4">
+        <div className="bg-white p-4 rounded-lg shadow-md mb-6 flex gap-4 border-l-8 border-dhl-yellow">
           <div className="flex-1 relative">
             <Search className="absolute left-3 top-3 text-gray-400" size={20} />
             <input 
               id="search-input"
               type="text" 
               placeholder="Search by title or tags..." 
-              className="w-full pl-10 pr-4 py-2 text-gray-400 border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+              className="w-full pl-10 pr-4 py-2 text-gray-900 border-2 border-gray-100 rounded-lg focus:outline-none focus:border-dhl-red transition-colors"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
           </div>
           <select 
             id="status-filter"
-            className="border rounded-lg px-4 py-2 text-gray-700"
+            className="border-2 border-gray-100 rounded-lg px-4 py-2 text-gray-700 focus:outline-none focus:border-dhl-red"
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
           >
@@ -72,32 +72,36 @@ export default function Dashboard() {
 
         {/* Loading State */}
         {isLoading ? (
-          <div id="loading-spinner" className="text-center py-12 text-gray-500 font-bold">
+          <div id="loading-spinner" className="text-center py-12 text-dhl-red font-bold animate-pulse">
             Loading articles...
           </div>
         ) : (
           /* Article Grid */
           <div id="article-grid" className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {filteredArticles.length === 0 ? (
-              <div id="no-articles-message" className="col-span-3 text-center py-12 text-gray-500">
+              <div id="no-articles-message" className="col-span-3 text-center py-12 text-gray-500 bg-white rounded-lg shadow">
                 No articles found matching your criteria.
               </div>
             ) : (
               filteredArticles.map(article => (
                 <Link href={`/article/${article.id}`} key={article.id} id={`article-card-${article.id}`}>
-                  <div className="bg-white p-6 rounded-lg shadow hover:shadow-lg transition cursor-pointer border-t-4 border-red-600 h-full flex flex-col">
+                  <div className="bg-white p-6 rounded-lg shadow hover:shadow-xl transition-all cursor-pointer border-t-8 border-dhl-red h-full flex flex-col group">
                     <div className="flex justify-between items-start mb-4">
-                      <FileText className="text-gray-500" />
-                      <span className={`px-2 py-1 text-xs rounded-full font-bold
+                      <FileText className="text-gray-400 group-hover:text-dhl-red transition-colors" />
+                      <span className={`px-3 py-1 text-xs rounded-full font-black uppercase tracking-wider
                         ${article.status === 'Draft' ? 'bg-yellow-100 text-yellow-700' : 
                           article.status === 'Reviewed' ? 'bg-blue-100 text-blue-700' : 
                           'bg-green-100 text-green-700'}`}>
                         {article.status}
                       </span>
                     </div>
-                    <h3 className="text-lg text-gray-900 font-bold mb-2">{article.title}</h3>
-                    <p className="text-sm text-gray-500 mb-4 line-clamp-2 flex-grow">{article.content}</p>
-                    <div className="text-xs text-gray-400 mt-auto">Tags: {article.tags || 'None'}</div>
+                    <h3 className="text-lg text-gray-900 font-bold mb-2 group-hover:text-dhl-red transition-colors">{article.title}</h3>
+                    <p className="text-sm text-gray-600 mb-4 line-clamp-3 flex-grow">{article.content}</p>
+                    <div className="flex flex-wrap gap-1 mt-auto">
+                      {article.tags?.split(',').map(tag => (
+                        <span key={tag} className="text-[10px] bg-gray-100 text-gray-500 px-2 py-0.5 rounded italic">#{tag.trim()}</span>
+                      )) || <span className="text-[10px] text-gray-400">No tags</span>}
+                    </div>
                   </div>
                 </Link>
               ))
